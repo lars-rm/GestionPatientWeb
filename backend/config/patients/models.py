@@ -46,8 +46,15 @@ class Consultation(models.Model):
     tarif = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # class Meta:
+    #     constraints = [
+    #         models.UniqueConstraint(
+    #             fields=['patient', 'specialite', 'date_consultation'],
+    #             name='unique_patient_specialite_date'
+    #         )
+    #     ]
+
     def clean(self):
-        
         if self.date_consultation and self.date_consultation > timezone.now().date():
             raise ValidationError({'date_consultation': "La date de consultation ne peut pas être dans le futur."})
 
@@ -69,9 +76,8 @@ class RendezVous(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def clean(self):
-       
         if not self.pk and self.date_heure and self.date_heure < timezone.now():
             raise ValidationError({'date_heure': "La date de rendez-vous ne peut pas être dans le passé."})
 
     def __str__(self):
-        return f"RDV {self.patient.nom} - {self.date_heure.strftime('%d/%m/%Y %H:%M')}"
+        return f"RDV {self.patient.nom} {self.date_heure.strftime('%d/%m/%Y %H:%M')}"

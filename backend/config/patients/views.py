@@ -20,15 +20,16 @@ class SpecialiteViewSet(viewsets.ModelViewSet):
     serializer_class = SpecialiteSerializer
 
 class ConsultationViewSet(viewsets.ModelViewSet):
-    queryset = Consultation.objects.all().order_by('-date_consultation')
+    # select_related permet d'optimiser les requêtes SQL SQL en joignant patient et spécialité
+    queryset = Consultation.objects.all().select_related('patient', 'specialite').order_by('-date_consultation', '-created_at')
     serializer_class = ConsultationSerializer
 
 class RendezVousViewSet(viewsets.ModelViewSet):
-    queryset = RendezVous.objects.all().order_by('-date_heure')
+    queryset = RendezVous.objects.all().select_related('patient').order_by('-date_heure')
     serializer_class = RendezVousSerializer
 
     def get_queryset(self):
-        queryset = RendezVous.objects.all().order_by('-date_heure')
+        queryset = RendezVous.objects.all().select_related('patient').order_by('-date_heure')
         statut = self.request.query_params.get('statut', None)
         if statut is not None:
             queryset = queryset.filter(statut=statut)
