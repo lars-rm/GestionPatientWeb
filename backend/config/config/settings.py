@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
     'patients',
 ]
@@ -69,6 +70,15 @@ CORS_ALLOWED_ORIGINS = [
 # URL(s) du frontend en production, séparées par des virgules
 if os.environ.get('FRONTEND_URL'):
     CORS_ALLOWED_ORIGINS += os.environ['FRONTEND_URL'].split(',')
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
 
 ROOT_URLCONF = 'config.urls'
 

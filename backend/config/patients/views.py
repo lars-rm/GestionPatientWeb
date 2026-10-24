@@ -1,5 +1,8 @@
 from rest_framework import viewsets, status
-from rest_framework.decorators import api_view
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.db.models import Sum, Count
 from django.utils import timezone
@@ -54,3 +57,24 @@ def dashboard_stats(request):
         'rdv_en_attente': rdv_en_attente,
         'revenus_totaux': float(revenus_totaux),
     }, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login(request):
+    """Vérifie les identifiants et renvoie le token d'authentification"""
+    serializer = AuthTokenSerializer(data=request.data, context={'request': request})
+    serializer.is_valid(raise_exception=True)
+    user = serializer.validated_data['user']
+    token, _ = Token.objects.get_or_create(user=user)
+    return Response({'token': token.key, 'username': user.username})
+
+@api_view(['POST'])
+def logout(request):
+    """Supprime le token de l'utilisateur connecté"""
+    request.auth.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET'])
+def me(request):
+    """Renvoie l'utilisateur connecté"""
+    return Response({'username': request.user.username})
