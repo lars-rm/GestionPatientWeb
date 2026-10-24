@@ -104,7 +104,7 @@ export function PatientsList() {
       {/* Toast Notification */}
       {toast && (
         <div
-          className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium transition-all ${
+          className={`fixed top-5 left-4 right-4 sm:left-auto sm:right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium transition-all ${
             toast.type === 'success'
               ? 'bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-950/80 dark:border-emerald-800 dark:text-emerald-300'
               : 'bg-red-50 border-red-200 text-red-800 dark:bg-red-950/80 dark:border-red-800 dark:text-red-300'
@@ -162,7 +162,8 @@ export function PatientsList() {
 
       {/* Tableau des patients */}
       <div className="bg-white dark:bg-[#1a1926] rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
-        <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse whitespace-nowrap">
           <thead>
             <tr className="border-b border-gray-100 dark:border-gray-800 text-xs font-semibold text-gray-400 uppercase tracking-wider">
               <th className="p-4">Patient</th>
@@ -232,6 +233,7 @@ export function PatientsList() {
             )}
           </tbody>
         </table>
+        </div>
 
         {/* Barre de Pagination (5 éléments par page) */}
         {!loading && filteredPatients.length > 0 && (

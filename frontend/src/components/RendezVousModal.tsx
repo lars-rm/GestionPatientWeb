@@ -125,7 +125,7 @@ export function RendezVousModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-[#1a1926] rounded-2xl w-full max-w-lg p-5 shadow-xl relative border border-gray-100 dark:border-gray-800">
+      <div className="bg-white dark:bg-[#1a1926] rounded-2xl w-full max-h-[90vh] overflow-y-auto max-w-lg p-5 shadow-xl relative border border-gray-100 dark:border-gray-800">
         <button
           onClick={onClose}
           type="button"

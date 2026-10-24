@@ -131,11 +131,11 @@ export function RendezVousPage() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto relative">
+    <div className="lg:p-6 max-w-7xl mx-auto relative">
       {/* Toast */}
       {toast && (
         <div
-          className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium transition-all ${
+          className={`fixed top-5 left-4 right-4 sm:left-auto sm:right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium transition-all ${
             toast.type === 'success'
               ? 'bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-950/80 dark:border-emerald-800 dark:text-emerald-300'
               : 'bg-red-50 border-red-200 text-red-800 dark:bg-red-950/80 dark:border-red-800 dark:text-red-300'
@@ -156,7 +156,7 @@ export function RendezVousPage() {
 
         <button
           onClick={handleOpenAddModal}
-          className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-xl font-medium transition cursor-pointer shadow-lg shadow-purple-500/20"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-xl font-medium transition cursor-pointer shadow-lg shadow-purple-500/20"
         >
           <Plus size={18} />
           Nouveau rendez-vous

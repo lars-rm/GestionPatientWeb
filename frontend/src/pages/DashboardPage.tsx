@@ -58,11 +58,11 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6 animate-fadeIn">
+    <div className="lg:p-6 max-w-7xl mx-auto space-y-6 animate-fadeIn">
       {/* En-tête de bienvenue décoratif */}
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl p-6 text-white shadow-lg flex items-center justify-between">
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl p-5 sm:p-6 text-white shadow-lg flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold">Tableau de Bord Clinique</h1>
+          <h1 className="text-xl sm:text-2xl font-extrabold">Tableau de Bord Clinique</h1>
           <p className="text-purple-100 text-sm mt-1">
             Bienvenue ! Voici l'analyse en temps réel de l'activité de votre cabinet.
           </p>
@@ -128,7 +128,7 @@ export function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Graphique 1 : Répartition des statuts de rendez-vous */}
         <div className="bg-white dark:bg-[#1a1926] rounded-3xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
             <h2 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
               <PieChart size={20} className="text-purple-600" />
               Statistiques des Rendez-vous
@@ -199,7 +199,7 @@ export function DashboardPage() {
             <p className="text-sm text-gray-400 mb-6">Comparatif de la base de données active</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 text-center">
               <p className="text-xs text-gray-400 uppercase font-semibold">Patients Enregistrés</p>
               <p className="text-2xl font-black text-purple-600 mt-2">{totalPatients}</p>

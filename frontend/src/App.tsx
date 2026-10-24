@@ -11,6 +11,7 @@ export function App() {
   // MODIFICATION ICI : 'dashboard' au lieu de 'patients' pour l'affichage à l'ouverture
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (darkMode) {
@@ -21,13 +22,23 @@ export function App() {
   }, [darkMode]);
 
   return (
-    <div className="flex h-screen bg-[#f8f9fa] dark:bg-[#12111a] text-gray-800 dark:text-gray-100 font-sans transition-colors duration-200">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+    <div className="flex h-dvh bg-[#f8f9fa] dark:bg-[#12111a] text-gray-800 dark:text-gray-100 font-sans transition-colors duration-200">
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
 
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header activeTab={activeTab} darkMode={darkMode} setDarkMode={setDarkMode} />
+      <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
+        <Header
+          activeTab={activeTab}
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
+          onMenuClick={() => setSidebarOpen(true)}
+        />
 
-        <main className="flex-1 overflow-y-auto p-8">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           {activeTab === 'patients' && <PatientsList />}
 
           {activeTab === 'dashboard' && <DashboardPage />}
