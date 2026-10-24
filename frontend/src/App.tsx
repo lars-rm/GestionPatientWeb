@@ -10,7 +10,6 @@ import { LoginPage } from './pages/LoginPage';
 import { getStoredUser, logout } from './services/api';
 
 export function App() {
-  // MODIFICATION ICI : 'dashboard' au lieu de 'patients' pour l'affichage à l'ouverture
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [darkMode, setDarkMode] = useState<boolean>(false);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
@@ -42,7 +41,7 @@ export function App() {
   }
 
   return (
-    <div className="flex h-dvh bg-[#f8f9fa] dark:bg-[#12111a] text-gray-800 dark:text-gray-100 font-sans transition-colors duration-200">
+    <div className="flex h-dvh bg-page dark:bg-page-dark text-gray-800 dark:text-gray-100 font-sans transition-colors duration-200">
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}

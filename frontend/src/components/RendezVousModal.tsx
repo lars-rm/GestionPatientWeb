@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { RendezVous } from '../types/rendezvous';
+import type { RendezVous, StatutRendezVous } from '../types/rendezvous';
 import type { Patient } from '../types/patient';
 import { X } from 'lucide-react';
 
@@ -28,7 +28,7 @@ export function RendezVousModal({
   const [formData, setFormData] = useState<{
     patient: number | '';
     date_heure: string;
-    statut: 'EN_ATTENTE' | 'CONFIRME' | 'ANNULE';
+    statut: StatutRendezVous;
     notes: string;
   }>({
     patient: '',
@@ -92,7 +92,7 @@ export function RendezVousModal({
         notes: formData.notes.trim() || '',
       };
 
-      await onSubmit(payload as any);
+      await onSubmit(payload);
       onClose();
     } catch (err: any) {
       if (err.response && err.response.data) {
@@ -125,7 +125,7 @@ export function RendezVousModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-[#1a1926] rounded-2xl w-full max-h-[90vh] overflow-y-auto max-w-lg p-5 shadow-xl relative border border-gray-100 dark:border-gray-800">
+      <div className="bg-white dark:bg-surface-dark rounded-2xl w-full max-h-[90vh] overflow-y-auto max-w-lg p-5 shadow-xl relative border border-gray-100 dark:border-gray-800">
         <button
           onClick={onClose}
           type="button"
@@ -196,7 +196,7 @@ export function RendezVousModal({
             </label>
             <select
               value={formData.statut}
-              onChange={(e) => setFormData({ ...formData, statut: e.target.value as any })}
+              onChange={(e) => setFormData({ ...formData, statut: e.target.value as StatutRendezVous })}
               className="w-full px-3 py-1.5 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
               <option value="EN_ATTENTE">En attente</option>

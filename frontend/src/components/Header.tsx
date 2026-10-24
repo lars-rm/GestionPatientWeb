@@ -17,7 +17,7 @@ export function Header({ activeTab, darkMode, setDarkMode, onMenuClick }: Header
   };
 
   return (
-    <header className="h-16 lg:h-20 shrink-0 bg-white dark:bg-[#1a1926] border-b border-gray-100 dark:border-gray-800 px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4 transition-colors duration-200">
+    <header className="h-16 lg:h-20 shrink-0 bg-white dark:bg-surface-dark border-b border-gray-100 dark:border-gray-800 px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4 transition-colors duration-200">
       <div className="flex items-center gap-3 min-w-0">
         {/* Bouton menu (mobile) */}
         <button

@@ -30,7 +30,6 @@ export function ConsultationModal({
     motif: string;
     diagnostic: string;
     prescription: string;
-    notes: string;
     tarif: string | number;
   }>({
     patient: '',
@@ -39,7 +38,6 @@ export function ConsultationModal({
     motif: '',
     diagnostic: '',
     prescription: '',
-    notes: '',
     tarif: '',
   });
 
@@ -51,12 +49,11 @@ export function ConsultationModal({
     if (initialData) {
       setFormData({
         patient: initialData.patient,
-        specialite: initialData.specialite,
+        specialite: initialData.specialite ?? '',
         date_consultation: initialData.date_consultation ? initialData.date_consultation.split('T')[0] : today,
-        motif: (initialData as any).motif || '',
+        motif: initialData.motif,
         diagnostic: initialData.diagnostic || '',
         prescription: initialData.prescription || '',
-        notes: initialData.notes || '',
         tarif: initialData.tarif !== undefined && initialData.tarif !== null ? String(initialData.tarif) : '',
       });
     } else {
@@ -67,7 +64,6 @@ export function ConsultationModal({
         motif: '',
         diagnostic: '',
         prescription: '',
-        notes: '',
         tarif: '',
       });
     }
@@ -112,11 +108,10 @@ export function ConsultationModal({
         motif: formData.motif.trim(),
         diagnostic: formData.diagnostic.trim(),
         prescription: formData.prescription.trim() || null,
-        notes: formData.notes.trim() || null,
         tarif: Number(formData.tarif),
       };
 
-      await onSubmit(payload as any);
+      await onSubmit(payload);
       onClose();
     } catch (err: any) {
       if (err.response && err.response.data) {
@@ -149,7 +144,7 @@ export function ConsultationModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-[#1a1926] rounded-2xl w-full max-h-[90vh] overflow-y-auto max-w-xl p-5 shadow-xl relative border border-gray-100 dark:border-gray-800">
+      <div className="bg-white dark:bg-surface-dark rounded-2xl w-full max-h-[90vh] overflow-y-auto max-w-xl p-5 shadow-xl relative border border-gray-100 dark:border-gray-800">
         <button
           onClick={onClose}
           type="button"
@@ -299,7 +294,7 @@ export function ConsultationModal({
               {errors.diagnostic && <p className="mt-0.5 text-[11px] text-red-500 font-medium">{errors.diagnostic}</p>}
             </div>
 
-            {/* Prescription & Notes */}
+            {/* Prescription */}
             <div className="sm:col-span-2">
               <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Ordonnance / Prescription</label>
               <textarea

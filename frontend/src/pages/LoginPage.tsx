@@ -28,8 +28,8 @@ export function LoginPage({ onLogin }: LoginPageProps) {
   };
 
   return (
-    <div className="min-h-dvh flex items-center justify-center p-4 bg-[#f8f9fa] dark:bg-[#12111a] font-sans">
-      <div className="w-full max-w-sm bg-white dark:bg-[#1a1926] rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 sm:p-8">
+    <div className="min-h-dvh flex items-center justify-center p-4 bg-page dark:bg-page-dark font-sans">
+      <div className="w-full max-w-sm bg-white dark:bg-surface-dark rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 sm:p-8">
         {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-white font-bold text-xl">

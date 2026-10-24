@@ -11,7 +11,10 @@ import {
   getSpecialites,
 } from '../services/api';
 import { ConsultationModal } from '../components/ConsultationModal';
-import { Plus, Edit2, Trash2, Search, FileText, CheckCircle, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, FileText } from 'lucide-react';
+import { Toast } from '../components/Toast';
+import { Pagination } from '../components/Pagination';
+import { useToast } from '../hooks/useToast';
 
 export function ConsultationsPage() {
   const [consultations, setConsultations] = useState<Consultation[]>([]);
@@ -22,18 +25,12 @@ export function ConsultationsPage() {
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4;
+  const itemsPerPage = 5;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingConsultation, setEditingConsultation] = useState<Consultation | null>(null);
 
-  // Notification Toast
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-
-  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 4000);
-  };
+  const { toast, showToast } = useToast();
 
   const fetchData = async () => {
     try {
@@ -74,26 +71,22 @@ export function ConsultationsPage() {
         await deleteConsultation(id);
         showToast('Consultation supprimée avec succès.', 'success');
         fetchData();
-      } catch (error) {
+      } catch {
         showToast('Erreur lors de la suppression de la consultation.', 'error');
       }
     }
   };
 
   const handleSubmit = async (data: Omit<Consultation, 'id' | 'created_at'>) => {
-    try {
-      if (editingConsultation) {
-        await updateConsultation(editingConsultation.id, data);
-        showToast('Consultation modifiée avec succès.');
-      } else {
-        await createConsultation(data);
-        showToast('Consultation enregistrée avec succès.');
-      }
-      fetchData();
-      setIsModalOpen(false);
-    } catch (error: any) {
-      throw error;
+    if (editingConsultation) {
+      await updateConsultation(editingConsultation.id, data);
+      showToast('Consultation modifiée avec succès.');
+    } else {
+      await createConsultation(data);
+      showToast('Consultation enregistrée avec succès.');
     }
+    fetchData();
+    setIsModalOpen(false);
   };
 
   const getPatientName = (patientId: number) => {
@@ -101,7 +94,8 @@ export function ConsultationsPage() {
     return p ? `${p.nom} ${p.prenom}` : `Patient #${patientId}`;
   };
 
-  const getSpecialiteName = (specId: number) => {
+  const getSpecialiteName = (specId: number | null) => {
+    if (specId === null) return '-';
     const s = specialites.find((s) => s.id === specId);
     return s ? s.nom : `Spécialité #${specId}`;
   };
@@ -110,7 +104,7 @@ export function ConsultationsPage() {
     const patientName = getPatientName(c.patient).toLowerCase();
     const specName = getSpecialiteName(c.specialite).toLowerCase();
     const diag = (c.diagnostic || '').toLowerCase();
-    const motif = ((c as any).motif || '').toLowerCase();
+    const motif = c.motif.toLowerCase();
     const term = searchTerm.toLowerCase();
 
     return (
@@ -122,7 +116,6 @@ export function ConsultationsPage() {
   });
 
   // Calcul de la pagination
-  const totalPages = Math.ceil(filteredConsultations.length / itemsPerPage) || 1;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedConsultations = filteredConsultations.slice(startIndex, startIndex + itemsPerPage);
 
@@ -133,19 +126,7 @@ export function ConsultationsPage() {
 
   return (
     <div className="lg:p-6 max-w-7xl mx-auto relative">
-      {/* Toast Notification */}
-      {toast && (
-        <div
-          className={`fixed top-5 left-4 right-4 sm:left-auto sm:right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium transition-all ${
-            toast.type === 'success'
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-950/80 dark:border-emerald-800 dark:text-emerald-300'
-              : 'bg-red-50 border-red-200 text-red-800 dark:bg-red-950/80 dark:border-red-800 dark:text-red-300'
-          }`}
-        >
-          {toast.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
-          <span>{toast.message}</span>
-        </div>
-      )}
+      <Toast toast={toast} />
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
@@ -172,7 +153,7 @@ export function ConsultationsPage() {
           placeholder="Rechercher par patient, spécialité, motif, diagnostic..."
           value={searchTerm}
           onChange={handleSearchChange}
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1a1926] text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-dark text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
         />
       </div>
 
@@ -180,12 +161,12 @@ export function ConsultationsPage() {
       {loading ? (
         <div className="text-center py-12 text-gray-500">Chargement des consultations...</div>
       ) : filteredConsultations.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-[#1a1926] rounded-2xl border border-gray-100 dark:border-gray-800">
+        <div className="text-center py-12 bg-white dark:bg-surface-dark rounded-2xl border border-gray-100 dark:border-gray-800">
           <FileText className="mx-auto text-gray-400 mb-3" size={40} />
           <p className="text-gray-500 dark:text-gray-400 font-medium">Aucune consultation trouvée.</p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-[#1a1926] rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -225,7 +206,7 @@ export function ConsultationsPage() {
                           className="p-1.5 text-gray-500 hover:text-purple-600 dark:hover:text-purple-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
                           title="Modifier"
                         >
-                          <Edit2 size={16} />
+                          <Pencil size={16} />
                         </button>
                         <button
                           onClick={() => handleDelete(c.id)}
@@ -242,38 +223,12 @@ export function ConsultationsPage() {
             </table>
           </div>
 
-          {/* Barre de Pagination */}
-          <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-t border-gray-100 dark:border-gray-800 text-sm text-gray-500 dark:text-gray-400 gap-4">
-            <div>
-              Affichage de <span className="font-semibold text-gray-800 dark:text-white">{startIndex + 1}</span> à{' '}
-              <span className="font-semibold text-gray-800 dark:text-white">
-                {Math.min(startIndex + itemsPerPage, filteredConsultations.length)}
-              </span>{' '}
-              sur <span className="font-semibold text-gray-800 dark:text-white">{filteredConsultations.length}</span> résultats
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="p-2 rounded-xl border border-gray-200 dark:border-gray-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer"
-              >
-                <ChevronLeft size={18} />
-              </button>
-
-              <span className="px-3 py-1 font-medium text-gray-800 dark:text-white">
-                Page {currentPage} sur {totalPages}
-              </span>
-
-              <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className="p-2 rounded-xl border border-gray-200 dark:border-gray-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer"
-              >
-                <ChevronRight size={18} />
-              </button>
-            </div>
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalItems={filteredConsultations.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+          />
         </div>
       )}
 

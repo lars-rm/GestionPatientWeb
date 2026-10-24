@@ -23,7 +23,7 @@ export function Sidebar({ activeTab, setActiveTab, isOpen, onClose, onLogout }: 
       {isOpen && <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={onClose} />}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-[#1a1926] border-r border-gray-100 dark:border-gray-800 flex flex-col justify-between h-dvh transition-all duration-200 lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-surface-dark border-r border-gray-100 dark:border-gray-800 flex flex-col justify-between h-dvh transition-all duration-200 lg:static lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >

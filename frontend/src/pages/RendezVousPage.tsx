@@ -9,7 +9,10 @@ import {
   getPatients,
 } from '../services/api';
 import { RendezVousModal } from '../components/RendezVousModal';
-import { Plus, Edit2, Trash2, Search, Calendar, CheckCircle, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, Calendar } from 'lucide-react';
+import { Toast } from '../components/Toast';
+import { Pagination } from '../components/Pagination';
+import { useToast } from '../hooks/useToast';
 
 export function RendezVousPage() {
   const [rendezVousList, setRendezVousList] = useState<RendezVous[]>([]);
@@ -20,18 +23,12 @@ export function RendezVousPage() {
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4;
+  const itemsPerPage = 5;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRdv, setEditingRdv] = useState<RendezVous | null>(null);
 
-  // Toast
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-
-  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 4000);
-  };
+  const { toast, showToast } = useToast();
 
   const fetchData = async () => {
     try {
@@ -70,26 +67,22 @@ export function RendezVousPage() {
         await deleteRendezVous(id);
         showToast('Rendez-vous supprimé avec succès.', 'success');
         fetchData();
-      } catch (error) {
+      } catch {
         showToast('Erreur lors de la suppression.', 'error');
       }
     }
   };
 
   const handleSubmit = async (data: Omit<RendezVous, 'id' | 'created_at'>) => {
-    try {
-      if (editingRdv) {
-        await updateRendezVous(editingRdv.id, data);
-        showToast('Rendez-vous modifié avec succès.');
-      } else {
-        await createRendezVous(data);
-        showToast('Rendez-vous enregistré avec succès.');
-      }
-      fetchData();
-      setIsModalOpen(false);
-    } catch (error: any) {
-      throw error;
+    if (editingRdv) {
+      await updateRendezVous(editingRdv.id, data);
+      showToast('Rendez-vous modifié avec succès.');
+    } else {
+      await createRendezVous(data);
+      showToast('Rendez-vous enregistré avec succès.');
     }
+    fetchData();
+    setIsModalOpen(false);
   };
 
   const getPatientName = (patientId: number) => {
@@ -110,7 +103,6 @@ export function RendezVousPage() {
   });
 
   // Pagination
-  const totalPages = Math.ceil(filteredRdv.length / itemsPerPage) || 1;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedRdv = filteredRdv.slice(startIndex, startIndex + itemsPerPage);
 
@@ -132,19 +124,7 @@ export function RendezVousPage() {
 
   return (
     <div className="lg:p-6 max-w-7xl mx-auto relative">
-      {/* Toast */}
-      {toast && (
-        <div
-          className={`fixed top-5 left-4 right-4 sm:left-auto sm:right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium transition-all ${
-            toast.type === 'success'
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-950/80 dark:border-emerald-800 dark:text-emerald-300'
-              : 'bg-red-50 border-red-200 text-red-800 dark:bg-red-950/80 dark:border-red-800 dark:text-red-300'
-          }`}
-        >
-          {toast.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
-          <span>{toast.message}</span>
-        </div>
-      )}
+      <Toast toast={toast} />
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
@@ -172,7 +152,7 @@ export function RendezVousPage() {
             placeholder="Rechercher par patient ou notes..."
             value={searchTerm}
             onChange={handleSearchChange}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1a1926] text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-dark text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
         </div>
 
@@ -183,7 +163,7 @@ export function RendezVousPage() {
               setStatusFilter(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1a1926] text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+            className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-dark text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
           >
             <option value="TOUS">Tous les statuts</option>
             <option value="EN_ATTENTE">En attente</option>
@@ -197,12 +177,12 @@ export function RendezVousPage() {
       {loading ? (
         <div className="text-center py-12 text-gray-500">Chargement des rendez-vous...</div>
       ) : filteredRdv.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-[#1a1926] rounded-2xl border border-gray-100 dark:border-gray-800">
+        <div className="text-center py-12 bg-white dark:bg-surface-dark rounded-2xl border border-gray-100 dark:border-gray-800">
           <Calendar className="mx-auto text-gray-400 mb-3" size={40} />
           <p className="text-gray-500 dark:text-gray-400 font-medium">Aucun rendez-vous trouvé.</p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-[#1a1926] rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -239,7 +219,7 @@ export function RendezVousPage() {
                           className="p-1.5 text-gray-500 hover:text-purple-600 dark:hover:text-purple-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
                           title="Modifier"
                         >
-                          <Edit2 size={16} />
+                          <Pencil size={16} />
                         </button>
                         <button
                           onClick={() => handleDelete(rdv.id)}
@@ -256,38 +236,12 @@ export function RendezVousPage() {
             </table>
           </div>
 
-          {/* Pagination */}
-          <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-t border-gray-100 dark:border-gray-800 text-sm text-gray-500 dark:text-gray-400 gap-4">
-            <div>
-              Affichage de <span className="font-semibold text-gray-800 dark:text-white">{startIndex + 1}</span> à{' '}
-              <span className="font-semibold text-gray-800 dark:text-white">
-                {Math.min(startIndex + itemsPerPage, filteredRdv.length)}
-              </span>{' '}
-              sur <span className="font-semibold text-gray-800 dark:text-white">{filteredRdv.length}</span> résultats
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="p-2 rounded-xl border border-gray-200 dark:border-gray-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer"
-              >
-                <ChevronLeft size={18} />
-              </button>
-
-              <span className="px-3 py-1 font-medium text-gray-800 dark:text-white">
-                Page {currentPage} sur {totalPages}
-              </span>
-
-              <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className="p-2 rounded-xl border border-gray-200 dark:border-gray-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer"
-              >
-                <ChevronRight size={18} />
-              </button>
-            </div>
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalItems={filteredRdv.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+          />
         </div>
       )}
 
