@@ -2,10 +2,10 @@
   {
     "model": "auth.user",
     "fields": {
-      "username": "demo",
+      "username": "admin",
       "password": "pbkdf2_sha256$1500000$LYEZebNQTU3UWB3xr78WOp$91AiiAoqsMV7Eh23bcP7nCJ8w5Y7qFdA45Z5LTx32is=",
       "first_name": "Compte",
-      "last_name": "Démo",
+      "last_name": "Admin",
       "email": "",
       "is_staff": false,
       "is_superuser": false,
