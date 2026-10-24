@@ -4,7 +4,7 @@ import type { Consultation } from '../types/consultation';
 import type { Specialite } from '../types/specialite';
 import type { RendezVous } from '../types/rendezvous';
 
-const BASE_URL = 'http://127.0.0.1:8000/api';
+const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api';
 
 // --- PATIENTS ---
 export const getPatients = async (): Promise<Patient[]> => {
