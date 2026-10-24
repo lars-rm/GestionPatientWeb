@@ -1,3 +1,4 @@
+from django.utils import timezone
 from rest_framework import serializers
 from .models import Patient, Specialite, Consultation, RendezVous
 
@@ -5,6 +6,11 @@ class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patient
         fields = '__all__'
+
+    def validate_date_naissance(self, value):
+        if value > timezone.now().date():
+            raise serializers.ValidationError("La date de naissance ne peut pas être dans le futur.")
+        return value
 
 class SpecialiteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,6 +35,11 @@ class ConsultationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Consultation
         fields = '__all__'
+
+    def validate_date_consultation(self, value):
+        if value > timezone.now().date():
+            raise serializers.ValidationError("La date de consultation ne peut pas être dans le futur.")
+        return value
 
     def validate(self, data):
         patient = data.get('patient')
@@ -58,3 +69,9 @@ class RendezVousSerializer(serializers.ModelSerializer):
     class Meta:
         model = RendezVous
         fields = '__all__'
+
+    def validate_date_heure(self, value):
+        # Un rendez-vous existant peut être modifié même si sa date est passée
+        if not self.instance and value < timezone.now():
+            raise serializers.ValidationError("La date de rendez-vous ne peut pas être dans le passé.")
+        return value

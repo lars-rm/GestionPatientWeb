@@ -1,5 +1,4 @@
 from django.db import models
-from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 class Patient(models.Model):
@@ -22,10 +21,6 @@ class Patient(models.Model):
             models.UniqueConstraint(fields=['nom', 'prenom'], name='unique_patient_nom_prenom')
         ]
 
-    def clean(self):
-        if self.date_naissance and self.date_naissance > timezone.now().date():
-            raise ValidationError({'date_naissance': "La date de naissance ne peut pas être dans le futur."})
-
     def __str__(self):
         return f"{self.nom} {self.prenom}"
 
@@ -43,20 +38,9 @@ class Consultation(models.Model):
     date_consultation = models.DateField(default=timezone.now)
     motif = models.TextField()
     diagnostic = models.TextField(blank=True, null=True)
+    prescription = models.TextField(blank=True, null=True)
     tarif = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
-
-    # class Meta:
-    #     constraints = [
-    #         models.UniqueConstraint(
-    #             fields=['patient', 'specialite', 'date_consultation'],
-    #             name='unique_patient_specialite_date'
-    #         )
-    #     ]
-
-    def clean(self):
-        if self.date_consultation and self.date_consultation > timezone.now().date():
-            raise ValidationError({'date_consultation': "La date de consultation ne peut pas être dans le futur."})
 
     def __str__(self):
         return f"Consultation - {self.patient.nom} ({self.date_consultation})"
@@ -74,10 +58,6 @@ class RendezVous(models.Model):
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='EN_ATTENTE')
     notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
-    def clean(self):
-        if not self.pk and self.date_heure and self.date_heure < timezone.now():
-            raise ValidationError({'date_heure': "La date de rendez-vous ne peut pas être dans le passé."})
 
     def __str__(self):
         return f"RDV {self.patient.nom} {self.date_heure.strftime('%d/%m/%Y %H:%M')}"
