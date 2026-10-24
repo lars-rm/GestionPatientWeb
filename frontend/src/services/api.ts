@@ -6,6 +6,56 @@ import type { RendezVous } from '../types/rendezvous';
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api';
 
+// --- AUTHENTIFICATION ---
+const TOKEN_KEY = 'auth_token';
+const USER_KEY = 'auth_user';
+
+export const getStoredUser = (): string | null => localStorage.getItem(USER_KEY);
+
+const clearSession = () => {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+};
+
+// Ajoute le token à chaque requête
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (token) {
+    config.headers.Authorization = `Token ${token}`;
+  }
+  return config;
+});
+
+// Token invalide ou expiré : on déconnecte l'utilisateur
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 && localStorage.getItem(TOKEN_KEY)) {
+      clearSession();
+      window.dispatchEvent(new Event('auth:logout'));
+    }
+    return Promise.reject(error);
+  }
+);
+
+export const login = async (username: string, password: string): Promise<string> => {
+  const response = await axios.post<{ token: string; username: string }>(`${BASE_URL}/auth/login/`, {
+    username,
+    password,
+  });
+  localStorage.setItem(TOKEN_KEY, response.data.token);
+  localStorage.setItem(USER_KEY, response.data.username);
+  return response.data.username;
+};
+
+export const logout = async (): Promise<void> => {
+  try {
+    await axios.post(`${BASE_URL}/auth/logout/`);
+  } finally {
+    clearSession();
+  }
+};
+
 // --- PATIENTS ---
 export const getPatients = async (): Promise<Patient[]> => {
   const response = await axios.get<Patient[]>(`${BASE_URL}/patients/`);
